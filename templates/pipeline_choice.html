@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Output Pipeline</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+margin:0;
+font-family:'Poppins',sans-serif;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+color:white;
+
+background: linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#1a1a40);
+background-size:400% 400%;
+animation: gradientMove 12s ease infinite;
+}
+
+@keyframes gradientMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+h1{
+color:#00ffe1;
+text-shadow:0 0 15px #00ffe1;
+margin-bottom:10px;
+}
+
+.subtitle{
+color:#ddd;
+margin-bottom:40px;
+font-size:18px;
+}
+
+.container{
+display:flex;
+gap:40px;
+}
+
+/* Cards */
+
+.choice-card{
+
+width:300px;
+padding:40px 30px;
+border-radius:20px;
+
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(12px);
+
+border:1px solid rgba(255,255,255,0.1);
+
+cursor:pointer;
+
+transition:0.4s;
+
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+
+text-align:center;
+}
+
+.choice-card:hover{
+
+transform: translateY(-10px) scale(1.03);
+
+border-color:#00ffe1;
+
+box-shadow:0 0 25px rgba(0,255,200,0.8);
+
+background: rgba(255,255,255,0.08);
+
+}
+
+.choice-card h2{
+margin-top:0;
+font-size:26px;
+}
+
+.choice-card p{
+color:#ddd;
+line-height:1.6;
+}
+
+/* Icon animation */
+
+.icon{
+font-size:50px;
+margin-bottom:15px;
+display:block;
+transition:0.4s;
+}
+
+.choice-card:hover .icon{
+transform: scale(1.2) rotate(5deg);
+}
+
+</style>
+</head>
+
+<body>
+
+<h1> Output Pipeline</h1>
+<p class="subtitle">Choose how you want to experience your Mudra Story</p>
+
+<div class="container">
+
+<div class="choice-card" onclick="window.location.href='/pdf_format'">
+
+<span class="icon">📄</span>
+
+<h2>PDF Pipeline</h2>
+
+<p>
+View your mudra interpretation in a beautifully formatted
+document and download it for later reference.
+</p>
+
+</div>
+
+
+<div class="choice-card" onclick="window.location.href='/voice_format'">
+
+<span class="icon">🔊</span>
+
+<h2>Voice Narration</h2>
+
+<p>
+Listen to an AI narrator explain your mudra sequence
+and the corresponding classical story.
+</p>
+
+</div>
+
+</div>
+
+</body>
+</html>

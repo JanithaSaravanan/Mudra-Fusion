@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Voice Narration</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+margin:0;
+font-family:'Poppins',sans-serif;
+color:white;
+text-align:center;
+padding:40px;
+
+background: linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#1a1a40);
+background-size:400% 400%;
+animation:bgmove 12s infinite ease;
+}
+
+@keyframes bgmove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+h1{
+color:#00ffe1;
+text-shadow:0 0 10px #00ffe1;
+margin-bottom:30px;
+}
+
+/* STORY BOX */
+
+.story-box{
+
+width:65%;
+margin:auto;
+padding:30px;
+
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
+
+border-radius:20px;
+
+box-shadow:0 10px 40px rgba(0,0,0,0.6);
+
+text-align:left;
+line-height:1.8;
+
+}
+
+/* HEADINGS */
+
+.story-box h2{
+color:#00ffe1;
+margin-bottom:20px;
+}
+
+.story-box h3{
+color:#ffd369;
+margin-top:20px;
+margin-bottom:8px;
+}
+
+.story-box p{
+margin:6px 0;
+font-size:16px;
+}
+
+/* BUTTONS */
+
+.btn{
+padding:15px 30px;
+border:none;
+border-radius:40px;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+margin:15px 10px;
+transition:0.3s;
+}
+
+.play-btn{
+background:linear-gradient(45deg,#00c9ff,#92fe9d);
+color:black;
+}
+
+.stop-btn{
+background:linear-gradient(45deg,#ff416c,#ff4b2b);
+color:white;
+}
+
+.back-btn{
+background:#444;
+color:white;
+}
+
+.btn:hover{
+transform:translateY(-3px);
+box-shadow:0 6px 20px rgba(0,0,0,0.5);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🔊 Voice Narration</h1>
+
+<div class="story-box" id="story-box"></div>
+
+<br>
+
+<button class="btn play-btn" onclick="speak()">▶ Play Narration</button>
+
+<button class="btn stop-btn" onclick="stopVoice()">⏹ Stop</button>
+
+<button class="btn back-btn" onclick="window.history.back()">← Back</button>
+
+
+<script>
+
+/* STORY FROM FLASK */
+
+const rawText = `{{ story }}`;
+
+
+/* FORMAT STORY */
+
+function formatStory(text){
+
+const sections = text.split("\n");
+
+let formatted = "";
+
+sections.forEach(line => {
+
+line = line.trim();
+
+if(line.includes("MUDRA-BASED STORY INTERPRETATION")){
+formatted += `<h2>🩰 Mudra-Based Story Interpretation</h2>`;
+}
+
+else if(line.includes("Mudra Sequence")){
+formatted += `<h3>🔹 Mudra Sequence</h3>`;
+}
+
+else if(line.includes("Matched Verse")){
+formatted += `<h3>📖 Matched Verse</h3>`;
+}
+
+else if(line.includes("Sanskrit")){
+formatted += `<h3>📜 Sanskrit</h3>`;
+}
+
+else if(line.includes("Transliteration")){
+formatted += `<h3>🔤 Transliteration</h3>`;
+}
+
+else if(line.includes("Translation")){
+formatted += `<h3>📘 Translation</h3>`;
+}
+
+else if(line.includes("Commentary")){
+formatted += `<h3>🧠 Commentary</h3>`;
+}
+
+else if(line.includes("Theme")){
+formatted += `<h3>🎭 Theme</h3>`;
+}
+
+else if(line.includes("Interpretation")){
+formatted += `<h3>✨ Interpretation</h3>`;
+}
+
+else if(line !== ""){
+formatted += `<p>${line}</p>`;
+}
+
+});
+
+document.getElementById("story-box").innerHTML = formatted;
+
+}
+
+formatStory(rawText);
+
+
+/* VOICE */
+
+let speech;
+
+function speak(){
+
+const text=document.getElementById('story-box').innerText;
+
+speech=new SpeechSynthesisUtterance(text);
+
+const voices=window.speechSynthesis.getVoices();
+
+speech.voice=voices.find(v=>v.name.includes("Google")||v.name.includes("Female")) || voices[0];
+
+speech.rate=0.9;
+speech.pitch=1.2;
+speech.volume=1;
+
+window.speechSynthesis.cancel();
+window.speechSynthesis.speak(speech);
+
+}
+
+function stopVoice(){
+window.speechSynthesis.cancel();
+}
+
+</script>
+
+</body>
+</html>

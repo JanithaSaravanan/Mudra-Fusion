@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mudra Story Interpreter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+   <style>
+
+body {
+    margin:0;
+    font-family:'Poppins', sans-serif;
+    background: linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#1a1a40);
+    background-size:400% 400%;
+    animation: gradientBG 12s ease infinite;
+    color:white;
+    display:flex;
+    height:100vh;
+}
+
+@keyframes gradientBG{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+/* CAMERA PANEL */
+
+.camera-panel{
+width:60%;
+padding:40px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+
+h2{
+letter-spacing:2px;
+text-transform:uppercase;
+color:#00ffe1;
+text-shadow:0 0 15px #00ffe1;
+margin-bottom:20px;
+}
+
+/* CAMERA FRAME */
+
+img{
+width:95%;
+min-height:480px;
+border-radius:25px;
+border:4px solid #00ffe1;
+background:black;
+box-shadow:0 0 40px rgba(0,255,200,0.5);
+transition:0.4s;
+}
+
+img:hover{
+box-shadow:0 0 60px rgba(0,255,200,0.9);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:40%;
+padding:30px;
+background:rgba(0,0,0,0.4);
+backdrop-filter:blur(15px);
+border-left:1px solid rgba(255,255,255,0.1);
+overflow-y:auto;
+}
+
+/* BUTTONS */
+
+.btn{
+padding:12px 28px;
+border:none;
+border-radius:40px;
+font-size:15px;
+margin:10px 6px;
+cursor:pointer;
+font-weight:600;
+transition:0.3s;
+letter-spacing:1px;
+}
+
+.btn:hover{
+transform:translateY(-4px);
+box-shadow:0 6px 20px rgba(0,0,0,0.5);
+}
+
+/* BUTTON COLORS */
+
+.btn-start{
+background:linear-gradient(45deg,#00c9ff,#92fe9d);
+color:black;
+}
+
+.btn-stop{
+background:linear-gradient(45deg,#ff416c,#ff4b2b);
+color:white;
+}
+
+.btn-clear{
+background:#555;
+color:white;
+width:100%;
+}
+
+.btn-generate{
+background:linear-gradient(45deg,#7f00ff,#e100ff);
+width:100%;
+color:white;
+box-shadow:0 0 15px rgba(225,0,255,0.6);
+}
+
+.btn-pipeline{
+background:linear-gradient(45deg,#f7971e,#ffd200);
+width:100%;
+color:black;
+}
+
+/* SEQUENCE CARDS */
+
+.list-item{
+background:rgba(255,255,255,0.07);
+margin:10px 0;
+padding:15px;
+border-radius:15px;
+border-left:5px solid #00ffe1;
+font-weight:bold;
+animation:slideIn 0.4s ease;
+}
+
+@keyframes slideIn{
+from{
+opacity:0;
+transform:translateX(20px);
+}
+to{
+opacity:1;
+transform:translateX(0);
+}
+}
+
+/* STORY BOX */
+
+#story-display{
+margin-top:25px;
+padding:20px;
+border-radius:15px;
+background:rgba(0,0,0,0.5);
+border:1px solid rgba(255,255,255,0.1);
+line-height:1.7;
+white-space:pre-wrap;
+display:none;
+color:#e6e6e6;
+box-shadow:inset 0 0 15px rgba(0,0,0,0.6);
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar{
+width:6px;
+}
+
+::-webkit-scrollbar-thumb{
+background:#00ffe1;
+border-radius:10px;
+}
+
+hr{
+border:none;
+border-top:1px solid rgba(255,255,255,0.1);
+margin:25px 0;
+}
+
+</style>
+</head>
+<body>
+
+    <div class="camera-panel">
+        <h2>✨ Live Hand Detection</h2>
+        <img id="video-feed" src="">
+        <div>
+            <button class="btn btn-start" onclick="startCamera()">Start Camera</button>
+            <button class="btn btn-stop" onclick="stopCamera()">Stop Camera</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <h2>📜 Detected Sequence</h2>
+        <div id="sequence-list"></div>
+        
+        <button class="btn btn-clear" onclick="clearSequence()">Clear Sequence</button>
+        
+        <hr>
+        
+        <button id="generate-btn" class="btn btn-generate" style="display: none;" onclick="getStory()">
+            🎭 Generate Story Interpretation
+        </button>
+
+        <div id="story-display"></div>
+
+        <button id="pipeline-btn" class="btn btn-pipeline" style="display: none; margin-top: 15px;" 
+                onclick="window.location.href='/output_pipeline'">
+            🚀 Enter Output Pipeline
+        </button>
+    </div>
+
+    <script>
+        // 1. START CAMERA
+        function startCamera() {
+            fetch('/start_camera').then(() => {
+                const feed = document.getElementById('video-feed');
+                feed.src = "{{ url_for('video_feed') }}?t=" + new Date().getTime();
+                feed.style.borderColor = "#00ffcc";
+                // Reset UI
+                document.getElementById('generate-btn').style.display = "none";
+                document.getElementById('story-display').style.display = "none";
+                document.getElementById('pipeline-btn').style.display = "none";
+            });
+        }
+
+        // 2. STOP CAMERA
+        function stopCamera() {
+            fetch('/stop_camera').then(() => {
+                const feed = document.getElementById('video-feed');
+                feed.src = ""; 
+                feed.style.borderColor = "#ff416c";
+                
+                // Show Generate button if mudras were captured
+                fetch('/get_sequence')
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.length > 0) {
+                            document.getElementById('generate-btn').style.display = "block";
+                        }
+                    });
+            });
+        }
+
+        // 3. GENERATE STORY & PIPELINE
+        function getStory() {
+            const display = document.getElementById('story-display');
+            display.style.display = "block";
+            display.innerHTML = "<span style='color: #f1c40f;'>⏳ Processing mudras and matching ancient verses...</span>";
+
+            fetch('/generate_story')
+                .then(res => res.json())
+                .then(data => {
+                    display.innerText = data.story;
+                    // Show the pipeline button after story is ready
+                    document.getElementById('pipeline-btn').style.display = "block";
+                    // Scroll to bottom
+                    display.scrollTop = display.scrollHeight;
+                });
+        }
+
+        // 4. CLEAR SEQUENCE
+        function clearSequence() {
+            fetch('/clear').then(() => {
+                document.getElementById('sequence-list').innerHTML = "";
+                document.getElementById('generate-btn').style.display = "none";
+                document.getElementById('story-display').style.display = "none";
+                document.getElementById('pipeline-btn').style.display = "none";
+            });
+        }
+
+        // 5. LIVE AUTO-REFRESH
+        setInterval(() => {
+            const feed = document.getElementById('video-feed');
+            if (feed.src.includes('video_feed')) {
+                fetch('/get_sequence')
+                    .then(res => res.json())
+                    .then(data => {
+                        const list = document.getElementById('sequence-list');
+                        list.innerHTML = data.map((m, i) => `<div class="list-item">${i+1}. ${m}</div>`).join('');
+                    });
+            }
+        }, 500);
+    </script>
+</body>
+</html>
