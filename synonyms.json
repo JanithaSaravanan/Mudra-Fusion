@@ -1,0 +1,169 @@
+{
+  "flower": ["pushpa", "pushpam", "kusuma", "padma", "lotus", "blossom", "bloom"],
+  "lotus": ["padma", "kamala", "pushkara"],
+  "beauty": ["soundarya", "saundarya", "grace", "charm", "elegance"],
+  "full bloom": ["blooming", "blossoming"],
+  "grace": ["anugraha", "kripa", "elegance"],
+  "softness": ["tenderness", "delicacy", "gentleness"],
+  "nature": ["prakriti", "creation"],
+  "femininity": ["shakti", "womanhood"],
+  "prosperity": ["lakshmi", "wealth", "abundance", "fortune"],
+
+  "devotion": ["bhakti", "shraddha", "prayer", "faith", "surrender"],
+  "prayer": ["vandana", "namaskara", "supplication"],
+  "salutation": ["namaskaram", "greeting", "obeisance"],
+  "respect": ["reverence", "honor"],
+  "surrender": ["sharanagati", "submission"],
+  "reverence": ["veneration", "adoration"],
+  "worship": ["puja", "archana", "upasana"],
+
+  "drink": ["pana", "consume"],
+  "poison": ["visha", "halaahala"],
+  "nectar": ["amrita", "soma"],
+  "consumption": ["intake", "drinking"],
+  "intoxication": ["mada", "drunkenness"],
+  "taste": ["rasa", "flavor"],
+
+  "moon": ["chandra", "soma"],
+  "half moon": ["ardha chandra"],
+  "crescent": ["chandrakala"],
+  "crown": ["kirita", "mukuta"],
+  "ornament": ["alankara", "bhushana"],
+  "divinity": ["daivam", "ishvara", "sacred"],
+
+  "leaf": ["patra", "patram"],
+  "knife": ["asi", "katti", "blade"],
+  "flag": ["dhvaja", "banner"],
+  "writing": ["lekhana", "script"],
+  "wind": ["vayu", "air"],
+  "river": ["nadi", "jala pravaha"],
+
+  "strength": ["bala", "power", "might"],
+  "power": ["shakti", "tejas", "energy"],
+  "royalty": ["rajya", "kingship", "majesty"],
+  "protection": ["raksha", "safety"],
+  "valour": ["vira", "courage"],
+
+  "bee": ["bhramara", "madhukara"],
+  "restlessness": ["chanchalata", "unease"],
+  "desire": ["kama", "longing"],
+  "wandering": ["roaming", "movement"],
+  "attraction": ["akarshana", "pull"],
+
+  "wheel": ["chakra"],
+  "discus": ["sudarshana"],
+  "time": ["kala"],
+  "cycle": ["rotation", "repetition"],
+  "weapon": ["ayudha"],
+
+  "cleverness": ["chaturya", "intelligence"],
+  "intelligence": ["buddhi", "wisdom"],
+  "confidence": ["atma-vishwasa"],
+  "skill": ["kaushala"],
+  "alertness": ["savadhana", "awareness"],
+  "smartness": ["sharpness"],
+
+  "eagle": ["garuda"],
+  "speed": ["vega", "swiftness"],
+  "freedom": ["liberty", "moksha"],
+  "divine service": ["seva", "bhakti seva"],
+
+  "purity": ["shuddhi", "cleanliness"],
+  "discernment": ["viveka", "discrimination"],
+
+  "eating": ["ashana", "feeding"],
+  "feeding": ["poshana"],
+  "precision": ["accuracy", "exactness"],
+
+  "sound": ["nada", "dhwani"],
+  "music": ["sangeeta"],
+  "rhythm": ["tala"],
+  "movement": ["gati"],
+
+  "holding": ["grasping", "dharana"],
+  "grasping": ["grahana"],
+  "fruit": ["phala"],
+
+  "obedience": ["ajnapalana", "submission"],
+  "peace": ["shanti"],
+
+  "seizing": ["capturing", "grabbing"],
+  "firmness": ["steadiness"],
+
+  "separation": ["viyoga", "division"],
+  "conflict": ["sangharsha"],
+
+  "offering": ["arpana", "prayacchati", "present"],
+  "giving": ["dana", "gift"],
+  "receiving": ["grahana"],
+  "presentation": ["offering act"],
+
+  "growth": ["vriddhi", "increase"],
+  "development": ["vikasa"],
+  "nurturing": ["poshana"],
+
+  "cutting": ["chedana"],
+  "sharpness": ["tikshnata"],
+  "destruction": ["vinasha"],
+
+  "bed": ["shayya"],
+  "rest": ["vishrama"],
+  "sleep": ["nidra"],
+  "fatigue": ["shrama"],
+
+  "key": ["kunji"],
+  "locking": ["bandhana"],
+  "binding": ["bandha"],
+  "restriction": ["nirodha"],
+  "control": ["niyantrana"],
+
+  "tortoise": ["kurma"],
+  "stability": ["sthira"],
+  "patience": ["dhairya"],
+  "foundation": ["adhara"],
+
+  "fish": ["matsya"],
+  "water": ["jala", "toyam"],
+  "life": ["jeevana"],
+  "flow": ["pravaha"],
+
+  "peacock": ["mayura"],
+  "joy": ["ananda"],
+  "pride": ["garva"],
+  "dance": ["nritya"],
+
+  "bud": ["mukula"],
+  "beginning": ["arambha"],
+  "promise": ["ashvasa"],
+  "potential": ["shakti"],
+
+  "fist": ["mushti"],
+  "anger": ["krodha"],
+  "determination": ["sankalpa"],
+
+  "rope": ["pasha"],
+  "bondage": ["bandhana"],
+  "attachment": ["moha"],
+
+  "conch": ["shankha"],
+  "auspiciousness": ["mangala"],
+  "divine call": ["sacred sound"],
+
+  "speech": ["vak", "vaani"],
+  "communication": ["sambhashana"],
+  "learning": ["adhyayana"],
+
+  "authority": ["adhikara"],
+  "leadership": ["netritva"],
+
+  "courage": ["sahasam"],
+  "needle": ["suchi"],
+  "pointing": ["nirdesha"],
+
+  "union": ["yoga"],
+  "connection": ["sambandha"],
+
+  "trident": ["trishula"],
+  "salvation": ["moksha"],
+  "rescue": ["uddhara"]
+}
