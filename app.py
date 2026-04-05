@@ -5,9 +5,10 @@ import numpy as np
 import math
 import time
 import os
-from fpdf import FPDF
-from tensorflow.lite.python.interpreter import Interpreter
+import tensorflow as tf
+Interpreter = tf.lite.Interpreter
 from story_engine import run_story_engine
+from pdf_handler import generate_pdf_from_story, get_pdf_static_path
 
 app = Flask(__name__)
 
@@ -29,9 +30,12 @@ current_mudra = None
 start_time = 0
 camera_active = False 
 cap = None            
-current_story_text = "" # Holds the last generated story for the pipeline
+current_story_template = ""  # Template-based story for homepage
+current_story_ai = ""        # AI-generated story for PDF
+
 
 def extract_coords(landmarks):
+    """Extract normalized hand coordinates for ML model input."""
     wrist = landmarks.landmark[0]
     scale = math.dist([wrist.x, wrist.y], [landmarks.landmark[9].x, landmarks.landmark[9].y]) or 1e-6
     data = []
@@ -39,7 +43,9 @@ def extract_coords(landmarks):
         data.extend([(lm.x - wrist.x)/scale, (lm.y - wrist.y)/scale, lm.z/scale])
     return data
 
+
 def get_frames():
+    """Generate video frames with mudra detection."""
     global current_mudra, start_time, mudra_sequence, camera_active, cap
     
     while camera_active:
@@ -47,7 +53,8 @@ def get_frames():
             break
 
         success, frame = cap.read()
-        if not success: break
+        if not success:
+            break
         
         frame = cv2.flip(frame, 1)
         img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -87,22 +94,28 @@ def get_frames():
         ret, buffer = cv2.imencode('.jpg', frame)
         yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
 
-# --- CORE ROUTES ---
+
+# ===================== CORE ROUTES =====================
 
 @app.route('/')
 def index():
+    """Serve main page."""
     return render_template('index.html')
+
 
 @app.route('/start_camera')
 def start_camera():
+    """Start camera feed."""
     global camera_active, cap
     if not camera_active:
         cap = cv2.VideoCapture(0)
         camera_active = True
     return jsonify({"status": "camera started"})
 
+
 @app.route('/stop_camera')
 def stop_camera():
+    """Stop camera feed."""
     global camera_active, cap
     camera_active = False
     if cap:
@@ -110,99 +123,89 @@ def stop_camera():
         cap = None
     return jsonify({"status": "camera stopped"})
 
+
 @app.route('/video_feed')
 def video_feed():
+    """Stream video frames."""
     return Response(get_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 @app.route('/get_sequence')
 def get_sequence():
+    """Get current mudra sequence."""
     return jsonify(mudra_sequence)
+
 
 @app.route('/clear')
 def clear():
-    global mudra_sequence, current_story_text
+    """Clear sequence and story."""
+    global mudra_sequence, current_story_template, current_story_ai
     mudra_sequence = []
-    current_story_text = ""
+    current_story_template = ""
+    current_story_ai = ""
     return jsonify({"status": "cleared"})
 
-# --- PIPELINE ROUTES ---
+
+# ===================== STORY GENERATION ROUTES =====================
 
 @app.route('/generate_story')
 def generate_story():
-    global mudra_sequence, current_story_text
+    """Generate a story from the mudra sequence."""
+    global mudra_sequence, current_story_template, current_story_ai
     if not mudra_sequence:
         return jsonify({"story": "❌ No mudras detected in the sequence yet."})
     
-    current_story_text = run_story_engine(mudra_sequence)
-    return jsonify({"story": current_story_text})
+    # Get both versions
+    stories = run_story_engine(mudra_sequence, version="all")
+    
+    # Store both locally
+    current_story_template = stories["template_based"]
+    current_story_ai = stories["ai_generated"] if stories["ai_generated"] else stories["template_based"]
+    
+    # Return template-based for homepage display
+    return jsonify({"story": current_story_template})
+
 
 @app.route('/output_pipeline')
 def output_pipeline():
+    """Show output format selection page."""
     return render_template('pipeline_choice.html')
+
+
+# ===================== OUTPUT FORMAT ROUTES =====================
 
 @app.route('/pdf_format')
 def pdf_format():
-    global current_story_text
+    """Generate and display PDF with AI-generated story (fallback to template)."""
+    global current_story_ai, current_story_template
+    
+    # Use AI version if available, fallback to template
+    story_for_pdf = current_story_ai if current_story_ai else current_story_template
+    
+    if not story_for_pdf:
+        return jsonify({"error": "No story generated yet"}), 400
+    
+    try:
+        # Generate PDF using pdf_handler module
+        pdf_path = generate_pdf_from_story(story_for_pdf)
+        pdf_file = get_pdf_static_path()
+        return render_template('pdf_view.html', pdf_file=pdf_file)
+    except Exception as e:
+        return jsonify({"error": f"PDF generation failed: {str(e)}"}), 500
 
-    pdf = FPDF()
-    pdf.add_page()
-
-    # ---------- TITLE ----------
-    pdf.set_font("Arial", "B", 18)
-    pdf.set_text_color(0, 102, 204)   # Blue
-    pdf.cell(0, 12, "Mudra Story Interpretation", ln=True, align="C")
-
-    pdf.ln(10)
-
-    # ---------- CLEAN TEXT ----------
-    clean_text = current_story_text.encode('latin-1', 'ignore').decode('latin-1')
-
-    # ---------- FORMAT STORY ----------
-    lines = clean_text.split("\n")
-
-    for line in lines:
-
-        line = line.strip()
-
-        if not line:
-            pdf.ln(4)
-            continue
-
-        # Headings
-        if line.startswith("🔹") or line.startswith("📜") or line.startswith("🔤") or line.startswith("📘") or line.startswith("🧠") or line.startswith("🎭") or line.startswith("✨"):
-            pdf.set_font("Arial", "B", 14)
-            pdf.set_text_color(0, 0, 0)
-            pdf.multi_cell(0, 8, line)
-
-        # Sub headings like Source, Speaker
-        elif line.startswith("Source") or line.startswith("Speaker"):
-            pdf.set_font("Arial", "B", 12)
-            pdf.set_text_color(40, 40, 40)
-            pdf.multi_cell(0, 8, line)
-
-        # Normal text
-        else:
-            pdf.set_font("Arial", "", 12)
-            pdf.set_text_color(0, 0, 0)
-            pdf.multi_cell(0, 8, line)
-
-    # ---------- CREATE STATIC FOLDER ----------
-    if not os.path.exists('static'):
-        os.makedirs('static')
-
-    pdf_path = "static/output_story.pdf"
-    pdf.output(pdf_path)
-
-    return render_template('pdf_view.html', pdf_file="output_story.pdf")
 
 @app.route('/voice_format')
 def voice_format():
-    global current_story_text
-    return render_template('voice_view.html', story=current_story_text)
+    """Display story in voice format (template-based)."""
+    global current_story_template
+    return render_template('voice_view.html', story=current_story_template)
+
 
 @app.route('/download_pdf')
 def download_pdf():
+    """Download generated PDF."""
     return send_file("static/output_story.pdf", as_attachment=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
