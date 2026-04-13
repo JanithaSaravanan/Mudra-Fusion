@@ -180,6 +180,7 @@ def generate_storyline(mudra_sequence, verse):
 🔹 Matched Verse:
 Source : {verse['source']}
 Speaker: {verse['speaker']}
+Id: {verse['id']}
 
 📜 Sanskrit:
 {verse['text_sanskrit']}
