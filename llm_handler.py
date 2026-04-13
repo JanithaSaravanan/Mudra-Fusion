@@ -8,7 +8,7 @@ import google.generativeai as genai
 
 # ===================== CONFIGURATION =====================
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY_HERE")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyDJ0hKR0D1EvYZkAAWcP9oTbzfTBtuG7xc")
 USE_LLM = GEMINI_API_KEY != 'YOUR_GEMINI_API_KEY_HERE'
 
 if USE_LLM:
@@ -18,65 +18,6 @@ if USE_LLM:
     except Exception as e:
         print(f"⚠️  Failed to configure Gemini API: {e}")
         USE_LLM = False
-
-# ===================== NAVARASAS (9 EMOTIONAL STATES) =====================
-
-NAVARASAS = {
-    "anxiety": "Bhayanaka (fear)",
-    "fear": "Bhayanaka (fear)",
-    "inner conflict": "Bhayanaka (fear)",
-    "sorrow": "Karuna (compassion/grief)",
-    "grief": "Karuna (compassion/grief)",
-    "anger": "Raudra (fury)",
-    "determination": "Veera (heroism)",
-    "courage": "Veera (heroism)",
-    "valour": "Veera (heroism)",
-    "devotion": "Shanta (peace/devotion)",
-    "prayer": "Shanta (peace/devotion)",
-    "worship": "Shanta (peace/devotion)",
-    "reverence": "Shanta (peace/devotion)",
-    "joy": "Hasya (joy/humour)",
-    "pride": "Hasya (joy/humour)",
-    "beauty": "Shringara (love/beauty)",
-    "love": "Shringara (love/beauty)",
-    "grace": "Shringara (love/beauty)",
-    "wonder": "Adbhuta (wonder)",
-    "attachment": "Karuna (compassion/grief)",
-    "disgust": "Bibhatsa (disgust)",
-    "power": "Veera (heroism)",
-}
-
-
-# ===================== RASA DETECTION =====================
-
-def detect_rasa(mudra_meanings_dict, mudra_sequence, verse_emotions):
-    """
-    Detect the dominant Navarasa (emotional state) from the mudra sequence
-    and verse emotions, to guide the LLM's tone.
-    
-    Args:
-        mudra_meanings_dict: Dictionary mapping mudra names to their meanings
-        mudra_sequence: List of mudra names in sequence
-        verse_emotions: List of emotion strings from the verse
-    
-    Returns:
-        A Navarasa string (e.g., "Shanta (peace/devotion)")
-    """
-    # Collect all emotional signals
-    all_signals = list(verse_emotions)
-    for mudra in mudra_sequence:
-        all_signals += mudra_meanings_dict.get(mudra, [])
-
-    detected = {}
-    for signal in all_signals:
-        rasa = NAVARASAS.get(signal.lower())
-        if rasa:
-            detected[rasa] = detected.get(rasa, 0) + 1
-
-    if not detected:
-        return "Shanta (peace/devotion)"  # default
-    return max(detected, key=detected.get)
-
 
 # ===================== LLM STORY GENERATION =====================
 
@@ -107,9 +48,7 @@ def generate_with_llm(mudra_meanings_dict, mudra_sequence, verse):
             )
         mudra_block = "\n".join(mudra_lines)
 
-        # --- Detect dominant rasa ---
         verse_emotions = verse.get("emotions", [])
-        dominant_rasa = detect_rasa(mudra_meanings_dict, mudra_sequence, verse_emotions)
 
         # --- Combined symbolic meanings across all mudras ---
         all_meanings = set()
@@ -130,8 +69,6 @@ what the dancer on stage is communicating through their hand gestures.
 In Bharatanatyam, hand gestures are a precise sign language. Each gesture carries a symbolic meaning, 
 and a sequence of gestures tells a story — like sentences building into a paragraph.
 The dancer is narrating a moment from Indian scripture through their body.
-The emotional mood of this performance is: {dominant_rasa}.
-
 === WHAT THE DANCER JUST DID ===
 The dancer performed these gestures in order:
 {mudra_block}
@@ -141,7 +78,6 @@ These gestures relate to this moment from {source}:
 Speaker in the verse: {speaker}
 What is happening: {verse.get('translation', '')}
 The deeper meaning: {verse.get('commentary_full', verse.get('commentary_summary', ''))}
-Emotional mood: {', '.join(verse_emotions)}
 
 === CRITICAL — READ BEFORE WRITING ===
 Before writing a single sentence, find the ONE central story that connects ALL the gestures together.
