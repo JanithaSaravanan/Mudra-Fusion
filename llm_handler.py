@@ -8,7 +8,7 @@ import google.generativeai as genai
 
 # ===================== CONFIGURATION =====================
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyDJ0hKR0D1EvYZkAAWcP9oTbzfTBtuG7xc")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "api key yours")
 USE_LLM = GEMINI_API_KEY != 'YOUR_GEMINI_API_KEY_HERE'
 
 if USE_LLM:
